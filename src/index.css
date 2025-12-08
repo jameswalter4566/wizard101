@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Bright Sky Theme */
+    --background: 200 100% 95%;
+    --foreground: 240 15% 15%;
+
+    --card: 240 15% 12%;
+    --card-foreground: 270 20% 95%;
+
+    --popover: 240 15% 12%;
+    --popover-foreground: 270 20% 95%;
+
+    /* Magical Purple Primary */
+    --primary: 270 75% 60%;
+    --primary-foreground: 240 15% 8%;
+    --primary-glow: 270 85% 70%;
+
+    --secondary: 260 25% 25%;
+    --secondary-foreground: 270 20% 95%;
+
+    --muted: 240 15% 15%;
+    --muted-foreground: 270 10% 65%;
+
+    --accent: 280 70% 55%;
+    --accent-foreground: 240 15% 8%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 270 20% 95%;
+
+    --border: 240 15% 20%;
+    --input: 240 15% 15%;
+    --ring: 270 75% 60%;
+
+    /* Sky Gradients */
+    --gradient-mystical: linear-gradient(135deg, hsl(270, 75%, 60%), hsl(280, 85%, 65%), hsl(260, 70%, 55%));
+    --gradient-ethereal: linear-gradient(180deg, hsl(200, 100%, 85%), hsl(220, 100%, 90%));
+    --gradient-sky: linear-gradient(180deg, hsl(200, 100%, 85%), hsl(210, 100%, 95%));
+    
+    /* Glowing Effects */
+    --glow-purple: 0 0 30px hsl(270, 75%, 60% / 0.5);
+    --glow-soft: 0 0 20px hsl(270, 85%, 70% / 0.3);
+    
+    /* Smooth Transitions */
+    --transition-magical: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Use same mystical theme for consistency */
+    --background: 240 15% 8%;
+    --foreground: 270 20% 95%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
