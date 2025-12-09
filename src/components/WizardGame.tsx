@@ -93,15 +93,15 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
   const schoolLabel = currentModel?.schoolId ? currentModel.schoolId.charAt(0).toUpperCase() + currentModel.schoolId.slice(1) : 'Unknown School';
 
   const shopItems = useMemo(() => ([
+    { id: 'snack-pack', name: 'Snack Pack Bundle', detail: 'A tasty haul for your pets', price: '10,000 $WIZ', image: '/hud/snack-pack.png' },
+    { id: 'spell-bundle', name: 'Spell Bundle', detail: 'Unlocks premium spell cards', price: '20,000 $WIZ', image: '/hud/spell-bundle.png' },
+    { id: 'coin-bundle', name: 'Coin Bundle', detail: 'Stock up your coffers', price: '30,000 $WIZ', image: '/hud/coin-bundle.png' },
     { id: 'ember-staff', name: 'Arcane Ember Staff', detail: '+20% fire damage', price: '250g' },
     { id: 'frostleaf-cloak', name: 'Frostleaf Cloak', detail: 'Cold resist + comfy', price: '180g' },
     { id: 'storm-charm', name: 'Storm Sprite Charm', detail: 'Summon storm ally', price: '95g' },
     { id: 'mythic-tome', name: 'Mythic Tome', detail: 'Unlocks a rare spell', price: '320g' },
     { id: 'life-amulet', name: 'Vitality Amulet', detail: 'Small heal over time', price: '140g' },
     { id: 'balance-sigil', name: 'Balance Sigil', detail: '+5% crit chance', price: '210g' },
-    { id: 'shadow-boots', name: 'Shadowstep Boots', detail: '+8% movement speed', price: '160g' },
-    { id: 'ice-shard', name: 'Crystallized Shard', detail: 'Boosts ice defense', price: '120g' },
-    { id: 'phoenix-feather', name: 'Phoenix Feather', detail: 'Revive once per duel', price: '280g' },
   ]), []);
 
   const inventoryTabs = useMemo(() => ([
@@ -478,12 +478,18 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                       type="button"
                       onClick={() => setSelectedShopItem(item.id)}
                       className={`relative group rounded-xl border border-border bg-muted/30 overflow-hidden text-left transition-all duration-200 ${isSelected ? 'ring-2 ring-primary shadow-xl bg-primary/10' : 'hover:border-primary/40 hover:bg-muted/40'}`}
-                      style={{ minHeight: '180px' }}
+                      style={{ minHeight: '220px' }}
                     >
                       <div className="absolute top-3 right-3">
                         <div className={`h-5 w-5 rounded-md border ${isSelected ? 'border-primary bg-primary/80' : 'border-border bg-card/80'}`} />
                       </div>
-                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/10 via-card to-muted/40" />
+                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/10 via-card to-muted/40 flex items-center justify-center overflow-hidden">
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <div className="text-xs text-muted-foreground">Preview coming soon</div>
+                        )}
+                      </div>
                       <div className="p-3 space-y-1">
                         <p className="text-base font-semibold text-foreground">{item.name}</p>
                         <p className="text-xs text-muted-foreground">{item.detail}</p>
