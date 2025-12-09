@@ -453,15 +453,18 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
             onClick={() => setIsShopOpen(false)}
             role="presentation"
           />
-          <div className="relative bg-card/95 text-foreground border border-border rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] h-[80vh] max-h-[85vh] overflow-hidden flex flex-col">
+          <div
+            className="relative bg-black/85 text-white border border-white/20 rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] h-[80vh] max-h-[85vh] overflow-hidden flex flex-col"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h2 className="text-3xl font-bold text-primary">Item Shop</h2>
-                <p className="text-sm text-muted-foreground">Pick your gear, then purchase when ready.</p>
+                <h2 className="text-3xl font-bold text-white">Item Shop</h2>
+                <p className="text-sm text-white/80">Pick your gear, then purchase when ready.</p>
               </div>
               <button
                 type="button"
-                className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                className="text-lg text-white/70 hover:text-white transition-colors"
                 onClick={() => setIsShopOpen(false)}
               >
                 ×
@@ -477,23 +480,23 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                       key={item.id}
                       type="button"
                       onClick={() => setSelectedShopItem(item.id)}
-                      className={`relative group rounded-xl border border-border bg-muted/30 overflow-hidden text-left transition-all duration-200 ${isSelected ? 'ring-2 ring-primary shadow-xl bg-primary/10' : 'hover:border-primary/40 hover:bg-muted/40'}`}
+                      className={`relative group rounded-xl border border-white/25 bg-white/5 overflow-hidden text-left transition-all duration-200 ${isSelected ? 'ring-2 ring-white shadow-xl bg-white/10' : 'hover:border-white/50 hover:bg-white/10'}`}
                       style={{ minHeight: '220px' }}
                     >
                       <div className="absolute top-3 right-3">
-                        <div className={`h-5 w-5 rounded-md border ${isSelected ? 'border-primary bg-primary/80' : 'border-border bg-card/80'}`} />
+                        <div className={`h-5 w-5 rounded-md border ${isSelected ? 'border-white bg-white/80' : 'border-white/40 bg-black/60'}`} />
                       </div>
-                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/10 via-card to-muted/40 flex items-center justify-center overflow-hidden">
+                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-white/10 via-black/40 to-black/70 flex items-center justify-center overflow-hidden">
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
                         ) : (
-                          <div className="text-xs text-muted-foreground">Preview coming soon</div>
+                          <div className="text-xs text-white/80">Preview coming soon</div>
                         )}
                       </div>
                       <div className="p-3 space-y-1">
-                        <p className="text-base font-semibold text-foreground">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.detail}</p>
-                        <p className="text-sm font-semibold text-primary mt-1">{item.price}</p>
+                        <p className="text-base font-semibold text-white">{item.name}</p>
+                        <p className="text-xs text-white/80">{item.detail}</p>
+                        <p className="text-sm font-semibold text-white mt-1">{item.price}</p>
                       </div>
                     </button>
                   );
@@ -502,13 +505,13 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
             </div>
 
             <div className="pt-4 flex items-center justify-between gap-3">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-white/80">
                 {selectedShopItem ? 'Ready to purchase selected item.' : 'Select an item to enable purchase.'}
               </div>
               <button
                 type="button"
                 disabled={!selectedShopItem}
-                className={`px-6 py-3 rounded-xl font-semibold uppercase tracking-wide transition-all duration-200 border ${selectedShopItem ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30 hover:scale-105' : 'bg-muted text-muted-foreground border-border opacity-60 cursor-not-allowed'}`}
+                className={`px-6 py-3 rounded-xl font-semibold uppercase tracking-wide transition-all duration-200 border ${selectedShopItem ? 'bg-white/20 text-white border-white shadow-lg shadow-white/20 hover:bg-white/30' : 'bg-white/5 text-white/50 border-white/20 opacity-70 cursor-not-allowed'}`}
               >
                 Buy Selected
               </button>
@@ -525,15 +528,18 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
             onClick={() => setIsInventoryOpen(false)}
             role="presentation"
           />
-          <div className="relative bg-card/95 text-foreground border border-border rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] h-[80vh] max-h-[85vh] overflow-hidden flex flex-col">
+          <div
+            className="relative bg-black/85 text-white border border-white/20 rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] h-[80vh] max-h-[85vh] overflow-hidden flex flex-col"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h2 className="text-3xl font-bold text-primary">Inventory</h2>
-                <p className="text-sm text-muted-foreground">Manage your gear, deck, and stats.</p>
+                <h2 className="text-3xl font-bold text-white">Inventory</h2>
+                <p className="text-sm text-white/80">Manage your gear, deck, and stats.</p>
               </div>
               <button
                 type="button"
-                className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                className="text-lg text-white/70 hover:text-white transition-colors"
                 onClick={() => setIsInventoryOpen(false)}
               >
                 ×
@@ -541,12 +547,12 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
             </div>
 
             <div className="flex-1 flex gap-4 overflow-hidden">
-              <div className="flex-1 bg-card/80 rounded-2xl border border-border p-4 overflow-y-auto">
+              <div className="flex-1 bg-white/5 rounded-2xl border border-white/20 p-4 overflow-y-auto">
                 {inventoryTab === 'character' && (
                   <div className="space-y-4 text-white">
                     <div className="flex justify-center">
-                      <div className="flex items-center gap-4 bg-muted/30 border border-border rounded-2xl px-4 py-3">
-                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary shadow-lg">
+                      <div className="flex items-center gap-4 bg-white/5 border border-white/20 rounded-2xl px-4 py-3">
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg">
                           <img src="/hud/avatar-placeholder.jpg" alt="Avatar" className="w-full h-full object-cover" />
                         </div>
                         <div className="text-center">
@@ -565,8 +571,8 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                         { label: 'Gold', value: '0' },
                         { label: '$WIZ', value: '0' },
                       ].map(stat => (
-                        <div key={stat.label} className="rounded-xl border border-border bg-muted/30 p-3 text-center">
-                          <div className="text-sm text-white/70">{stat.label}</div>
+                        <div key={stat.label} className="rounded-xl border border-white/20 bg-white/5 p-3 text-center">
+                          <div className="text-sm text-white/80">{stat.label}</div>
                           <div className="text-xl font-bold text-white mt-1">{stat.value}</div>
                         </div>
                       ))}
@@ -579,7 +585,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                     <p className="text-center text-sm text-white/80">Your items will appear here.</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                       {Array.from({ length: 12 }).map((_, idx) => (
-                        <div key={idx} className="h-24 rounded-lg border border-dashed border-border bg-muted/20" />
+                        <div key={idx} className="h-24 rounded-lg border border-dashed border-white/30 bg-white/5" />
                       ))}
                     </div>
                   </div>
@@ -590,7 +596,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                     <p className="text-center text-sm text-white/80">Your spells will display here.</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                       {Array.from({ length: 12 }).map((_, idx) => (
-                        <div key={idx} className="h-24 rounded-lg border border-dashed border-border bg-muted/20" />
+                        <div key={idx} className="h-24 rounded-lg border border-dashed border-white/30 bg-white/5" />
                       ))}
                     </div>
                   </div>
@@ -606,7 +612,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                       key={tab.id}
                       type="button"
                       onClick={() => setInventoryTab(tab.id as typeof inventoryTab)}
-                      className={`flex items-center justify-between gap-2 px-3 py-3 rounded-xl border transition-all duration-200 ${isActive ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30' : 'bg-card/80 text-foreground border-border hover:border-primary/40 hover:bg-muted/30'}`}
+                      className={`flex items-center justify-between gap-2 px-3 py-3 rounded-xl border transition-all duration-200 ${isActive ? 'bg-white/15 text-white border-white shadow-lg shadow-white/15' : 'bg-white/5 text-white/80 border-white/20 hover:border-white/40 hover:bg-white/10'}`}
                       style={{ marginTop: index === 0 ? 0 : 6 }}
                     >
                       <span className="text-sm font-semibold">{tab.label}</span>
