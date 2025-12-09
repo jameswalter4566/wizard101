@@ -93,6 +93,9 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
   const schoolLabel = currentModel?.schoolId ? currentModel.schoolId.charAt(0).toUpperCase() + currentModel.schoolId.slice(1) : 'Unknown School';
 
   const shopItems = useMemo(() => ([
+    { id: 'giant-spell-pack', name: 'Giant Magic Spell Pack', detail: 'Premium cache of spells', price: '10,000 $WIZ', image: '/hud/giant-spell-pack.png' },
+    { id: 'medium-spell-pack', name: 'Medium Magic Spell Pack', detail: 'Solid bundle of spells', price: '8,000 $WIZ', image: '/hud/medium-spell-pack.png' },
+    { id: 'small-spell-pack', name: 'Small Magic Spell Pack', detail: 'Starter spell picks', price: '6,000 $WIZ', image: '/hud/small-spell-pack.png' },
     { id: 'snack-pack', name: 'Snack Pack Bundle', detail: 'A tasty haul for your pets', price: '10,000 $WIZ', image: '/hud/snack-pack.png' },
     { id: 'spell-bundle', name: 'Spell Bundle', detail: 'Unlocks premium spell cards', price: '20,000 $WIZ', image: '/hud/spell-bundle.png' },
     { id: 'coin-bundle', name: 'Coin Bundle', detail: 'Stock up your coffers', price: '30,000 $WIZ', image: '/hud/coin-bundle.png' },
