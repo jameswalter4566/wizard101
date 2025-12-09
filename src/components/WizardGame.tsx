@@ -445,8 +445,8 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
             onClick={() => setIsShopOpen(false)}
             role="presentation"
           />
-          <div className="relative bg-card/95 text-foreground border border-border rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] max-h-[82vh] overflow-hidden">
-            <div className="flex items-start justify-between gap-4 mb-6">
+          <div className="relative bg-card/95 text-foreground border border-border rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] h-[80vh] max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <h2 className="text-3xl font-bold text-primary">Item Shop</h2>
                 <p className="text-sm text-muted-foreground">Pick your gear, then purchase when ready.</p>
@@ -460,7 +460,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
               </button>
             </div>
 
-            <div className="overflow-y-auto pr-2 max-h-[65vh]">
+            <div className="flex-1 overflow-y-auto pr-2">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {shopItems.map((item) => {
                   const isSelected = selectedShopItem === item.id;
@@ -487,7 +487,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
               </div>
             </div>
 
-            <div className="mt-5 flex items-center justify-between gap-3">
+            <div className="pt-4 flex items-center justify-between gap-3">
               <div className="text-sm text-muted-foreground">
                 {selectedShopItem ? 'Ready to purchase selected item.' : 'Select an item to enable purchase.'}
               </div>

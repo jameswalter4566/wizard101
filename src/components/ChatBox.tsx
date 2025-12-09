@@ -49,31 +49,33 @@ const ChatBox: React.FC<ChatBoxProps> = ({ onSendMessage, isConnected, container
           💬 Chat
         </Button>
       ) : (
-        <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg shadow-lg p-3 w-[720px] max-w-[95vw]">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-foreground">Chat</h3>
-            <Button
-              onClick={() => setIsMinimized(true)}
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-            >
-              —
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3 bg-muted/30 rounded-lg border border-border px-3 py-2 min-w-[180px]">
+        <div className="flex items-end gap-3">
+          <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg shadow-lg px-3 py-2 min-w-[180px] text-white">
+            <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/70 to-purple-600/70 flex items-center justify-center text-lg font-bold text-foreground shadow-md">
                 {profileInitial}
               </div>
-              <div>
-                <div className="text-sm font-semibold text-foreground leading-tight">{username}</div>
-                <div className="text-xs text-muted-foreground leading-tight">School: {schoolName}</div>
+              <div className="leading-tight">
+                <div className="text-sm font-semibold text-white">{username}</div>
+                <div className="text-xs text-white/80">School: {schoolName}</div>
               </div>
             </div>
+          </div>
 
-            <div className="flex-1 flex gap-2">
+          <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg shadow-lg p-2 w-[620px] max-w-[85vw]">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-sm font-semibold text-white">Chat</h3>
+              <Button
+                onClick={() => setIsMinimized(true)}
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+              >
+                —
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
               <Input
                 ref={inputRef}
                 type="text"
@@ -94,13 +96,13 @@ const ChatBox: React.FC<ChatBoxProps> = ({ onSendMessage, isConnected, container
                 <Send className="h-4 w-4" />
               </Button>
             </div>
+            
+            {!isConnected && (
+              <p className="text-xs text-white/80 mt-1">
+                Waiting for connection...
+              </p>
+            )}
           </div>
-          
-          {!isConnected && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Waiting for connection...
-            </p>
-          )}
         </div>
       )}
     </div>
