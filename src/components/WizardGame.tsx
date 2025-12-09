@@ -45,6 +45,15 @@ interface WizardGameProps {
   isSignedIn: boolean;
 }
 
+type HudIconSettings = {
+  offsetX: number;
+  offsetY: number;
+  scale: number;
+};
+
+const HUD_ICON_BASE_SIZE = 72;
+const HUD_HOVER_SCALE = 1.08;
+
 const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, modelId, isSignedIn }) => {
   const [wizardPosition, setWizardPosition] = useState([0, 6.3, 0]);
   const [wizardRotation, setWizardRotation] = useState(0);
@@ -64,6 +73,14 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
   const [playerScreenPos, setPlayerScreenPos] = useState({ x: 0, y: 0 }); // Track player screen position
   const [modelXOffset, setModelXOffset] = useState(0.10); // Model internal X offset - perfect for fire wizard
   const [modelYOffset, setModelYOffset] = useState(-3.60); // Model internal Y offset - perfect for fire wizard
+  const [hudContainerOffset, setHudContainerOffset] = useState({ x: 0, y: 0 });
+  const [shopIconSettings, setShopIconSettings] = useState<HudIconSettings>({ offsetX: 0, offsetY: 0, scale: 1 });
+  const [inventoryIconSettings, setInventoryIconSettings] = useState<HudIconSettings>({ offsetX: 0, offsetY: 0, scale: 1 });
+  const [isShopHovered, setIsShopHovered] = useState(false);
+  const [isInventoryHovered, setIsInventoryHovered] = useState(false);
+  const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [showHudDebug, setShowHudDebug] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { setCollisionCheck, checkCollision } = useCollisionDetection('/models/wizard_101_commons_area.glb');
   
@@ -171,6 +188,20 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
     } catch (error) {
       console.error('Failed to save chat message:', error);
     }
+  };
+
+  const updateIconSetting = (icon: 'shop' | 'inventory', key: keyof HudIconSettings, value: number) => {
+    if (icon === 'shop') {
+      setShopIconSettings(prev => ({ ...prev, [key]: value }));
+      return;
+    }
+    setInventoryIconSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetHudIconSettings = () => {
+    setHudContainerOffset({ x: 0, y: 0 });
+    setShopIconSettings({ offsetX: 0, offsetY: 0, scale: 1 });
+    setInventoryIconSettings({ offsetX: 0, offsetY: 0, scale: 1 });
   };
 
 
@@ -301,6 +332,14 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
 
       </Canvas>
 
+      {/* HUD Debug Toggle */}
+      <button
+        className="absolute top-4 left-4 z-20 px-3 py-2 text-xs font-semibold rounded-lg border border-border bg-card/80 text-foreground shadow-sm backdrop-blur-sm hover:bg-card/95 transition-colors"
+        onClick={() => setShowHudDebug(prev => !prev)}
+        type="button"
+      >
+        {showHudDebug ? 'Close HUD Icon Debug' : 'HUD Icon Debug'}
+      </button>
 
       {/* Multiplayer Status */}
       <div className="absolute top-4 right-4 text-foreground bg-card/90 backdrop-blur-sm p-4 rounded-lg border border-border shadow-lg">
@@ -315,17 +354,71 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
 
       {/* Chat Box */}
       <ChatBox onSendMessage={handleSendMessage} isConnected={isConnected} />
-      
-      {/* Music Volume Control */}
-      <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-3 rounded-lg border border-border shadow-lg">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-foreground">🎵</span>
+
+      {/* HUD Buttons & Volume */}
+      <div className="absolute bottom-4 right-4 flex flex-col items-end gap-3 z-20">
+        <div
+          className="flex items-end gap-3"
+          style={{ transform: `translate(${hudContainerOffset.x}px, ${hudContainerOffset.y}px)` }}
+        >
+          <button
+            type="button"
+            aria-label="Open Item Shop"
+            className="relative overflow-hidden rounded-xl border border-border bg-white/90 shadow-lg backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+            style={{
+              width: `${HUD_ICON_BASE_SIZE}px`,
+              height: `${HUD_ICON_BASE_SIZE}px`,
+              transform: `translate(${shopIconSettings.offsetX}px, ${shopIconSettings.offsetY}px) scale(${shopIconSettings.scale * (isShopHovered ? HUD_HOVER_SCALE : 1)})`,
+              transition: 'transform 180ms ease, box-shadow 180ms ease'
+            }}
+            onMouseEnter={() => setIsShopHovered(true)}
+            onMouseLeave={() => setIsShopHovered(false)}
+            onClick={() => setIsShopOpen(true)}
+          >
+            <img
+              src="/hud/item-shop.png"
+              alt="Item Shop"
+              className="w-full h-full object-contain pointer-events-none select-none"
+              draggable={false}
+            />
+            <div className="absolute inset-0 rounded-xl ring-1 ring-white/40" />
+          </button>
+
+          <button
+            type="button"
+            aria-label="Open Item Inventory"
+            className="relative overflow-hidden rounded-xl border border-border bg-white/90 shadow-lg backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+            style={{
+              width: `${HUD_ICON_BASE_SIZE}px`,
+              height: `${HUD_ICON_BASE_SIZE}px`,
+              transform: `translate(${inventoryIconSettings.offsetX}px, ${inventoryIconSettings.offsetY}px) scale(${inventoryIconSettings.scale * (isInventoryHovered ? HUD_HOVER_SCALE : 1)})`,
+              transition: 'transform 180ms ease, box-shadow 180ms ease'
+            }}
+            onMouseEnter={() => setIsInventoryHovered(true)}
+            onMouseLeave={() => setIsInventoryHovered(false)}
+            onClick={() => setIsInventoryOpen(true)}
+          >
+            <img
+              src="/hud/item-inventory.png"
+              alt="Item Inventory"
+              className="w-full h-full object-contain pointer-events-none select-none"
+              draggable={false}
+            />
+            <div className="absolute inset-0 rounded-xl ring-1 ring-white/40" />
+          </button>
+        </div>
+
+        <div className="bg-card/90 backdrop-blur-sm p-3 rounded-lg border border-border shadow-lg w-full flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-foreground">🎵</span>
+            <span className="text-xs text-muted-foreground">Music</span>
+          </div>
           <input
             type="range"
             min="0"
             max="100"
             defaultValue="30"
-            className="w-24"
+            className="w-28"
             onChange={(e) => {
               if (audioRef.current) {
                 audioRef.current.volume = parseInt(e.target.value) / 100;
@@ -334,6 +427,241 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
           />
         </div>
       </div>
+
+      {/* Item Shop Menu */}
+      {isShopOpen && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsShopOpen(false)}
+            role="presentation"
+          />
+          <div className="relative bg-card/95 text-foreground border border-border rounded-2xl shadow-2xl p-6 w-[min(90vw,520px)]">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-primary">Item Shop</h2>
+                <p className="text-sm text-muted-foreground">Browse the latest magical goods.</p>
+              </div>
+              <button
+                type="button"
+                className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setIsShopOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between bg-muted/40 border border-border rounded-xl p-3">
+                <div>
+                  <p className="font-semibold">Arcane Ember Staff</p>
+                  <p className="text-xs text-muted-foreground">+20% fire damage • smooth casting</p>
+                </div>
+                <span className="text-sm font-semibold text-primary">250g</span>
+              </div>
+              <div className="flex items-center justify-between bg-muted/40 border border-border rounded-xl p-3">
+                <div>
+                  <p className="font-semibold">Frostleaf Cloak</p>
+                  <p className="text-xs text-muted-foreground">Resist cold • cozy travel wrap</p>
+                </div>
+                <span className="text-sm font-semibold text-primary">180g</span>
+              </div>
+              <div className="flex items-center justify-between bg-muted/40 border border-border rounded-xl p-3">
+                <div>
+                  <p className="font-semibold">Storm Sprite Charm</p>
+                  <p className="text-xs text-muted-foreground">Call a sprite ally for 60s</p>
+                </div>
+                <span className="text-sm font-semibold text-primary">95g</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Tap an item to purchase (coming soon).</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inventory Menu */}
+      {isInventoryOpen && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsInventoryOpen(false)}
+            role="presentation"
+          />
+          <div className="relative bg-card/95 text-foreground border border-border rounded-2xl shadow-2xl p-6 w-[min(90vw,520px)]">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-primary">Inventory</h2>
+                <p className="text-sm text-muted-foreground">Your collected loot and gear.</p>
+              </div>
+              <button
+                type="button"
+                className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setIsInventoryOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border bg-muted/40 p-3">
+                <p className="font-semibold">Phoenix Feather</p>
+                <p className="text-xs text-muted-foreground mt-1">Revives you once per duel.</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/40 p-3">
+                <p className="font-semibold">Crystal Vial</p>
+                <p className="text-xs text-muted-foreground mt-1">Holds restorative potions.</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/40 p-3">
+                <p className="font-semibold">Explorer Boots</p>
+                <p className="text-xs text-muted-foreground mt-1">+5% movement speed.</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/40 p-3">
+                <p className="font-semibold">Spell Fragments</p>
+                <p className="text-xs text-muted-foreground mt-1">Combine to unlock new spells.</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">Full inventory interactions coming soon.</p>
+          </div>
+        </div>
+      )}
+
+      {/* HUD Icon Debugger */}
+      {showHudDebug && (
+        <div className="absolute top-16 left-4 z-30 bg-card/95 backdrop-blur-lg p-4 rounded-xl border border-border shadow-xl w-80">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div>
+              <h3 className="text-lg font-bold text-primary">HUD Icon Debug</h3>
+              <p className="text-xs text-muted-foreground">Fine-tune placement and scaling live.</p>
+            </div>
+            <button
+              type="button"
+              className="text-sm text-muted-foreground hover:text-foreground"
+              onClick={() => setShowHudDebug(false)}
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <div className="text-sm font-semibold mb-1">HUD Stack Offset</div>
+              <div className="flex flex-col gap-2">
+                <label className="flex flex-col text-xs gap-1">
+                  X Position ({hudContainerOffset.x.toFixed(0)}px)
+                  <input
+                    type="range"
+                    min={-200}
+                    max={200}
+                    step={1}
+                    value={hudContainerOffset.x}
+                    onChange={(e) => setHudContainerOffset(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                  />
+                </label>
+                <label className="flex flex-col text-xs gap-1">
+                  Y Position ({hudContainerOffset.y.toFixed(0)}px)
+                  <input
+                    type="range"
+                    min={-200}
+                    max={200}
+                    step={1}
+                    value={hudContainerOffset.y}
+                    onChange={(e) => setHudContainerOffset(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-3">
+              <div className="text-sm font-semibold mb-1">Item Shop Icon</div>
+              <div className="flex flex-col gap-2">
+                <label className="flex flex-col text-xs gap-1">
+                  X Offset ({shopIconSettings.offsetX.toFixed(0)}px)
+                  <input
+                    type="range"
+                    min={-150}
+                    max={150}
+                    step={1}
+                    value={shopIconSettings.offsetX}
+                    onChange={(e) => updateIconSetting('shop', 'offsetX', parseFloat(e.target.value))}
+                  />
+                </label>
+                <label className="flex flex-col text-xs gap-1">
+                  Y Offset ({shopIconSettings.offsetY.toFixed(0)}px)
+                  <input
+                    type="range"
+                    min={-150}
+                    max={150}
+                    step={1}
+                    value={shopIconSettings.offsetY}
+                    onChange={(e) => updateIconSetting('shop', 'offsetY', parseFloat(e.target.value))}
+                  />
+                </label>
+                <label className="flex flex-col text-xs gap-1">
+                  Scale ({shopIconSettings.scale.toFixed(2)}x)
+                  <input
+                    type="range"
+                    min={0.6}
+                    max={1.6}
+                    step={0.02}
+                    value={shopIconSettings.scale}
+                    onChange={(e) => updateIconSetting('shop', 'scale', parseFloat(e.target.value))}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-3">
+              <div className="text-sm font-semibold mb-1">Inventory Icon</div>
+              <div className="flex flex-col gap-2">
+                <label className="flex flex-col text-xs gap-1">
+                  X Offset ({inventoryIconSettings.offsetX.toFixed(0)}px)
+                  <input
+                    type="range"
+                    min={-150}
+                    max={150}
+                    step={1}
+                    value={inventoryIconSettings.offsetX}
+                    onChange={(e) => updateIconSetting('inventory', 'offsetX', parseFloat(e.target.value))}
+                  />
+                </label>
+                <label className="flex flex-col text-xs gap-1">
+                  Y Offset ({inventoryIconSettings.offsetY.toFixed(0)}px)
+                  <input
+                    type="range"
+                    min={-150}
+                    max={150}
+                    step={1}
+                    value={inventoryIconSettings.offsetY}
+                    onChange={(e) => updateIconSetting('inventory', 'offsetY', parseFloat(e.target.value))}
+                  />
+                </label>
+                <label className="flex flex-col text-xs gap-1">
+                  Scale ({inventoryIconSettings.scale.toFixed(2)}x)
+                  <input
+                    type="range"
+                    min={0.6}
+                    max={1.6}
+                    step={0.02}
+                    value={inventoryIconSettings.scale}
+                    onChange={(e) => updateIconSetting('inventory', 'scale', parseFloat(e.target.value))}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                onClick={resetHudIconSettings}
+              >
+                Reset to defaults
+              </button>
+              <div className="text-[11px] text-muted-foreground">
+                Tip: keep inventory on the far right.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Debug Position Controls - Hidden */}
       {showDebug && (
