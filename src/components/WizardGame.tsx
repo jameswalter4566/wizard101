@@ -552,12 +552,12 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {[
-                        { label: 'Health', value: '—' },
-                        { label: 'Mana', value: '—' },
-                        { label: 'Experience', value: '—' },
-                        { label: 'Training Points', value: '—' },
-                        { label: 'Gold', value: '—' },
-                        { label: '$WIZ', value: '—' },
+                        { label: 'Health', value: '100' },
+                        { label: 'Mana', value: '0' },
+                        { label: 'Experience', value: '0' },
+                        { label: 'Training Points', value: '0' },
+                        { label: 'Gold', value: '0' },
+                        { label: '$WIZ', value: '0' },
                       ].map(stat => (
                         <div key={stat.label} className="rounded-xl border border-border bg-muted/30 p-3 text-center">
                           <div className="text-sm text-white/70">{stat.label}</div>
