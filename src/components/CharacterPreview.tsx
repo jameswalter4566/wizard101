@@ -515,7 +515,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = memo(({
 
       {/* Follow Us Button */}
       <a
-        href="https://twitter.com"
+        href="https://x.com/wizard101dotfun"
         target="_blank"
         rel="noopener noreferrer"
         className="
@@ -531,7 +531,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = memo(({
           textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
         }}
       >
-        FOLLOW US
+        FOLLOW US ON X
       </a>
 
       {/* Type Selection if multiple models exist */}
