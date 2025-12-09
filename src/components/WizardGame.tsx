@@ -99,12 +99,6 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
     { id: 'snack-pack', name: 'Snack Pack Bundle', detail: 'A tasty haul for your pets', price: '10,000 $WIZ', image: '/hud/snack-pack.png' },
     { id: 'spell-bundle', name: 'Spell Bundle', detail: 'Unlocks premium spell cards', price: '20,000 $WIZ', image: '/hud/spell-bundle.png' },
     { id: 'coin-bundle', name: 'Coin Bundle', detail: 'Stock up your coffers', price: '30,000 $WIZ', image: '/hud/coin-bundle.png' },
-    { id: 'ember-staff', name: 'Arcane Ember Staff', detail: '+20% fire damage', price: '250g' },
-    { id: 'frostleaf-cloak', name: 'Frostleaf Cloak', detail: 'Cold resist + comfy', price: '180g' },
-    { id: 'storm-charm', name: 'Storm Sprite Charm', detail: 'Summon storm ally', price: '95g' },
-    { id: 'mythic-tome', name: 'Mythic Tome', detail: 'Unlocks a rare spell', price: '320g' },
-    { id: 'life-amulet', name: 'Vitality Amulet', detail: 'Small heal over time', price: '140g' },
-    { id: 'balance-sigil', name: 'Balance Sigil', detail: '+5% crit chance', price: '210g' },
   ]), []);
 
   const inventoryTabs = useMemo(() => ([
