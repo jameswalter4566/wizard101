@@ -81,12 +81,26 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [showHudDebug, setShowHudDebug] = useState(false);
+  const [selectedShopItem, setSelectedShopItem] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { setCollisionCheck, checkCollision } = useCollisionDetection('/models/wizard_101_commons_area.glb');
   
   // Get model-specific offsets
   const currentModel = getModelById(modelId);
   const modelYOffsetFromConfig = currentModel?.modelYOffset || 0;
+  const schoolLabel = currentModel?.schoolId ? currentModel.schoolId.charAt(0).toUpperCase() + currentModel.schoolId.slice(1) : 'Unknown School';
+
+  const shopItems = useMemo(() => ([
+    { id: 'ember-staff', name: 'Arcane Ember Staff', detail: '+20% fire damage', price: '250g' },
+    { id: 'frostleaf-cloak', name: 'Frostleaf Cloak', detail: 'Cold resist + comfy', price: '180g' },
+    { id: 'storm-charm', name: 'Storm Sprite Charm', detail: 'Summon storm ally', price: '95g' },
+    { id: 'mythic-tome', name: 'Mythic Tome', detail: 'Unlocks a rare spell', price: '320g' },
+    { id: 'life-amulet', name: 'Vitality Amulet', detail: 'Small heal over time', price: '140g' },
+    { id: 'balance-sigil', name: 'Balance Sigil', detail: '+5% crit chance', price: '210g' },
+    { id: 'shadow-boots', name: 'Shadowstep Boots', detail: '+8% movement speed', price: '160g' },
+    { id: 'ice-shard', name: 'Crystallized Shard', detail: 'Boosts ice defense', price: '120g' },
+    { id: 'phoenix-feather', name: 'Phoenix Feather', detail: 'Revive once per duel', price: '280g' },
+  ]), []);
   
   // Memoize initial position to prevent re-renders
   const initialPosition = useMemo(() => ({ x: 0, y: 6.3, z: 0 }), []);
@@ -341,19 +355,14 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
         {showHudDebug ? 'Close HUD Icon Debug' : 'HUD Icon Debug'}
       </button>
 
-      {/* Multiplayer Status */}
-      <div className="absolute top-4 right-4 text-foreground bg-card/90 backdrop-blur-sm p-4 rounded-lg border border-border shadow-lg">
-        <h3 className="text-lg font-bold mb-2 text-primary">Multiplayer</h3>
-        <p className="text-sm">Status: {isConnected ? '🟢 Connected' : '🔴 Disconnected'}</p>
-        <p className="text-sm">Players Online: {players.size + 1}</p>
-        <p className="text-sm">Your Name: {username}</p>
-        {isConnected && latency > 0 && (
-          <p className="text-sm">Latency: {latency}ms</p>
-        )}
-      </div>
-
       {/* Chat Box */}
-      <ChatBox onSendMessage={handleSendMessage} isConnected={isConnected} />
+      <ChatBox
+        onSendMessage={handleSendMessage}
+        isConnected={isConnected}
+        containerClassName="absolute bottom-6 left-1/2 -translate-x-1/2"
+        username={username || 'Wizard'}
+        schoolName={schoolLabel}
+      />
 
       {/* HUD Buttons & Volume */}
       <div className="absolute bottom-4 right-4 flex flex-col items-end gap-3 z-20">
@@ -436,11 +445,11 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
             onClick={() => setIsShopOpen(false)}
             role="presentation"
           />
-          <div className="relative bg-card/95 text-foreground border border-border rounded-2xl shadow-2xl p-6 w-[min(90vw,520px)]">
-            <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="relative bg-card/95 text-foreground border border-border rounded-3xl shadow-2xl p-6 w-[min(95vw,1040px)] max-h-[82vh] overflow-hidden">
+            <div className="flex items-start justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-primary">Item Shop</h2>
-                <p className="text-sm text-muted-foreground">Browse the latest magical goods.</p>
+                <h2 className="text-3xl font-bold text-primary">Item Shop</h2>
+                <p className="text-sm text-muted-foreground">Pick your gear, then purchase when ready.</p>
               </div>
               <button
                 type="button"
@@ -450,29 +459,45 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                 ×
               </button>
             </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between bg-muted/40 border border-border rounded-xl p-3">
-                <div>
-                  <p className="font-semibold">Arcane Ember Staff</p>
-                  <p className="text-xs text-muted-foreground">+20% fire damage • smooth casting</p>
-                </div>
-                <span className="text-sm font-semibold text-primary">250g</span>
+
+            <div className="overflow-y-auto pr-2 max-h-[65vh]">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {shopItems.map((item) => {
+                  const isSelected = selectedShopItem === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSelectedShopItem(item.id)}
+                      className={`relative group rounded-xl border border-border bg-muted/30 overflow-hidden text-left transition-all duration-200 ${isSelected ? 'ring-2 ring-primary shadow-xl bg-primary/10' : 'hover:border-primary/40 hover:bg-muted/40'}`}
+                      style={{ minHeight: '180px' }}
+                    >
+                      <div className="absolute top-3 right-3">
+                        <div className={`h-5 w-5 rounded-md border ${isSelected ? 'border-primary bg-primary/80' : 'border-border bg-card/80'}`} />
+                      </div>
+                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/10 via-card to-muted/40" />
+                      <div className="p-3 space-y-1">
+                        <p className="text-base font-semibold text-foreground">{item.name}</p>
+                        <p className="text-xs text-muted-foreground">{item.detail}</p>
+                        <p className="text-sm font-semibold text-primary mt-1">{item.price}</p>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex items-center justify-between bg-muted/40 border border-border rounded-xl p-3">
-                <div>
-                  <p className="font-semibold">Frostleaf Cloak</p>
-                  <p className="text-xs text-muted-foreground">Resist cold • cozy travel wrap</p>
-                </div>
-                <span className="text-sm font-semibold text-primary">180g</span>
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <div className="text-sm text-muted-foreground">
+                {selectedShopItem ? 'Ready to purchase selected item.' : 'Select an item to enable purchase.'}
               </div>
-              <div className="flex items-center justify-between bg-muted/40 border border-border rounded-xl p-3">
-                <div>
-                  <p className="font-semibold">Storm Sprite Charm</p>
-                  <p className="text-xs text-muted-foreground">Call a sprite ally for 60s</p>
-                </div>
-                <span className="text-sm font-semibold text-primary">95g</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Tap an item to purchase (coming soon).</p>
+              <button
+                type="button"
+                disabled={!selectedShopItem}
+                className={`px-6 py-3 rounded-xl font-semibold uppercase tracking-wide transition-all duration-200 border ${selectedShopItem ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30 hover:scale-105' : 'bg-muted text-muted-foreground border-border opacity-60 cursor-not-allowed'}`}
+              >
+                Buy Selected
+              </button>
             </div>
           </div>
         </div>
