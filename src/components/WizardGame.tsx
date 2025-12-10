@@ -550,7 +550,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
                     <div className="flex justify-center">
                       <div className="flex items-center gap-4 bg-white/5 border border-white/20 rounded-2xl px-4 py-3">
                         <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg">
-                          <img src="/hud/avatar-placeholder.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                          <img src="/hud/avatar-placeholder.webp" alt="Avatar" className="w-full h-full object-cover" />
                         </div>
                         <div className="text-center">
                           <div className="text-xl font-bold">{username || 'Wizard'}</div>
