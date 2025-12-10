@@ -65,6 +65,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.178.0",
     "vaul": "^0.9.3",
+    "@solana/web3.js": "^1.95.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
