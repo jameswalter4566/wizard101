@@ -46,6 +46,16 @@ interface WizardGameProps {
   isSignedIn: boolean;
 }
 
+declare global {
+  interface Window {
+    solana?: {
+      isPhantom?: boolean;
+      connect: (opts?: any) => Promise<{ publicKey?: { toString(): string } }>;
+      publicKey?: { toString(): string };
+    };
+  }
+}
+
 type HudIconSettings = {
   offsetX: number;
   offsetY: number;
@@ -84,6 +94,8 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
   const [showHudDebug, setShowHudDebug] = useState(false);
   const [selectedShopItem, setSelectedShopItem] = useState<string | null>(null);
   const [inventoryTab, setInventoryTab] = useState<'character' | 'backpack' | 'spells'>('character');
+  const [isBuying, setIsBuying] = useState(false);
+  const [buyStatus, setBuyStatus] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { setCollisionCheck, checkCollision } = useCollisionDetection('/models/wizard_101_commons_area.glb');
   
@@ -222,6 +234,53 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
     setShopIconSettings({ offsetX: 0, offsetY: 0, scale: 1 });
     setInventoryIconSettings({ offsetX: 0, offsetY: 0, scale: 1 });
   };
+
+  const handleBuySelected = useCallback(async () => {
+    if (!selectedShopItem) return;
+    const item = shopItems.find(i => i.id === selectedShopItem);
+    if (!item) return;
+
+    setIsBuying(true);
+    setBuyStatus(null);
+
+    try {
+      const provider = window.solana?.isPhantom ? window.solana : null;
+      if (!provider) {
+        setBuyStatus('Phantom wallet not detected. Please install Phantom.');
+        return;
+      }
+
+      const connectionRes = await provider.connect({ onlyIfTrusted: false });
+      const walletAddress = connectionRes?.publicKey?.toString() || provider.publicKey?.toString() || '';
+      if (!walletAddress) {
+        setBuyStatus('Unable to read Phantom wallet address.');
+        return;
+      }
+
+      const numericPrice = Number(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const { data, error } = await supabase.functions.invoke('wiz-swap', {
+        body: {
+          itemId: item.id,
+          price: numericPrice,
+          wallet: walletAddress,
+        }
+      });
+
+      if (error) {
+        console.error('Supabase swap error', error);
+        setBuyStatus('Swap request failed. Please try again.');
+        return;
+      }
+
+      console.log('Swap intent response:', data);
+      setBuyStatus('Phantom opened. Complete the swap to finish purchase.');
+    } catch (err) {
+      console.error('Buy flow failed', err);
+      setBuyStatus('Purchase failed. Please retry.');
+    } finally {
+      setIsBuying(false);
+    }
+  }, [selectedShopItem, shopItems]);
 
 
   return (
@@ -507,12 +566,18 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
               </div>
               <button
                 type="button"
-                disabled={!selectedShopItem}
+                disabled={!selectedShopItem || isBuying}
+                onClick={handleBuySelected}
                 className={`px-6 py-3 rounded-xl font-semibold uppercase tracking-wide transition-all duration-200 border ${selectedShopItem ? 'bg-white/20 text-white border-white shadow-lg shadow-white/20 hover:bg-white/30' : 'bg-white/5 text-white/50 border-white/20 opacity-70 cursor-not-allowed'}`}
               >
-                Buy Selected
+                {isBuying ? 'Processing...' : 'Buy Selected'}
               </button>
             </div>
+            {buyStatus && (
+              <div className="pt-2 text-sm text-white/80">
+                {buyStatus}
+              </div>
+            )}
           </div>
         </div>
       )}
