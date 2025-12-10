@@ -15,7 +15,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ onSendMessage, isConnected, container
   const [message, setMessage] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const profileInitial = username?.charAt(0)?.toUpperCase() || '?';
+  const profileImage = '/hud/avatar-placeholder.webp';
 
   const handleSend = () => {
     if (message.trim() && isConnected) {
@@ -52,8 +52,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ onSendMessage, isConnected, container
         <div className="flex items-end gap-3">
           <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg shadow-lg px-3 py-2 min-w-[180px] text-white">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/70 to-purple-600/70 flex items-center justify-center text-lg font-bold text-foreground shadow-md">
-                {profileInitial}
+              <div className="w-12 h-12 rounded-full overflow-hidden border border-white/40 shadow-md bg-black/40">
+                <img src={profileImage} alt={`${username} avatar`} className="w-full h-full object-cover" />
               </div>
               <div className="leading-tight">
                 <div className="text-sm font-semibold text-white">{username}</div>
