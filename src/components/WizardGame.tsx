@@ -276,7 +276,7 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
       console.log('Swap intent response:', data);
 
       const mintAddress: string | undefined = data?.mintAddress;
-      const heliusRpc: string = data?.heliusRpc || 'https://api.mainnet-beta.solana.com';
+      const heliusRpc: string = data?.heliusRpc || 'https://rpc.helius.xyz/?api-key=53c58a68-9bd4-4473-9edb-506db6cb4501';
 
       if (!mintAddress) {
         setBuyStatus('wiz_coin (mint) is missing in the response.');
