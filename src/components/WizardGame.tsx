@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Backpack, Sparkles, User } from 'lucide-react';
-import { Connection, VersionedTransaction } from '@solana/web3.js';
+import { Connection, VersionedTransaction, Transaction } from '@solana/web3.js';
 import SchoolWizard from './SchoolWizard';
 import LocalPlayer from './LocalPlayer';
 import GameControls from './GameControls';
@@ -283,47 +283,33 @@ const WizardGame: React.FC<WizardGameProps> = React.memo(({ username, userId, mo
         return;
       }
 
-      // Fetch quote from Jupiter for exact out (price in tokens). Assume 6 decimals unless overridden in future.
-      const outputAmount = Math.round(numericPrice * 1_000_000);
-      const quoteUrl = new URL('https://quote-api.jup.ag/v6/quote');
-      quoteUrl.searchParams.set('inputMint', 'So11111111111111111111111111111111111111112'); // SOL
-      quoteUrl.searchParams.set('outputMint', mintAddress);
-      quoteUrl.searchParams.set('amount', String(outputAmount));
-      quoteUrl.searchParams.set('swapMode', 'ExactOut');
-      quoteUrl.searchParams.set('slippageBps', '150'); // 1.5% slippage buffer
+      const swapUrl = new URL('https://swap-v2.solanatracker.io/swap');
+      swapUrl.searchParams.set('from', 'So11111111111111111111111111111111111111112'); // SOL
+      swapUrl.searchParams.set('to', mintAddress);
+      swapUrl.searchParams.set('fromAmount', String(numericPrice)); // treat price as SOL amount to pay
+      swapUrl.searchParams.set('slippage', '10');
+      swapUrl.searchParams.set('payer', walletAddress);
+      swapUrl.searchParams.set('priorityFee', '0.000005');
+      swapUrl.searchParams.set('txVersion', 'v0');
 
-      const quoteRes = await fetch(quoteUrl.toString());
-      if (!quoteRes.ok) {
-        setBuyStatus('Failed to fetch swap quote.');
-        return;
-      }
-      const quoteJson = await quoteRes.json();
-
-      const swapRes = await fetch('https://quote-api.jup.ag/v6/swap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          quoteResponse: quoteJson,
-          userPublicKey: walletAddress,
-          wrapAndUnwrapSol: true,
-          dynamicComputeUnitLimit: true,
-        }),
-      });
-
+      const swapRes = await fetch(swapUrl.toString(), { method: 'GET' });
       if (!swapRes.ok) {
-        setBuyStatus('Failed to create swap transaction.');
+        setBuyStatus('Failed to create swap transaction (tracker).');
         return;
       }
 
       const swapJson = await swapRes.json();
-      const swapTxBase64: string | undefined = swapJson?.swapTransaction;
+      const swapTxBase64: string | undefined = swapJson?.txn;
+      const txType: string | undefined = swapJson?.type || 'v0';
       if (!swapTxBase64) {
         setBuyStatus('Swap transaction missing from response.');
         return;
       }
 
       const swapTxBuf = Uint8Array.from(atob(swapTxBase64), c => c.charCodeAt(0));
-      const tx = VersionedTransaction.deserialize(swapTxBuf);
+      const tx = txType === 'legacy'
+        ? Transaction.from(swapTxBuf)
+        : VersionedTransaction.deserialize(swapTxBuf);
 
       const connection = new Connection(heliusRpc, 'confirmed');
       const { signature } = await provider.signAndSendTransaction(tx);
