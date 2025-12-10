@@ -515,7 +515,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = memo(({
 
       {/* Follow Us Button */}
       <a
-        href="https://x.com/wizard101dotfun"
+        href="https://x.com/wizard101onsol"
         target="_blank"
         rel="noopener noreferrer"
         className="
