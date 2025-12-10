@@ -1,6 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
 type SwapRequest = {
   itemId?: string;
   price?: number;
@@ -8,8 +15,22 @@ type SwapRequest = {
 };
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
-    const body: SwapRequest = await req.json();
+    let body: SwapRequest = {};
+    try {
+      body = await req.json();
+    } catch (parseErr) {
+      console.error("[wiz-swap] JSON parse error", parseErr);
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON body" }),
+        { status: 400, headers: corsHeaders },
+      );
+    }
+
     console.log("[wiz-swap] Incoming request", {
       body,
       headers: Object.fromEntries(req.headers),
@@ -22,7 +43,7 @@ serve(async (req) => {
       console.error("[wiz-swap] Missing wiz_coin environment variable");
       return new Response(
         JSON.stringify({ error: "Missing wiz_coin environment variable." }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
+        { status: 500, headers: corsHeaders },
       );
     }
 
@@ -30,7 +51,7 @@ serve(async (req) => {
       console.error("[wiz-swap] Invalid payload", body);
       return new Response(
         JSON.stringify({ error: "Invalid payload." }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
+        { status: 400, headers: corsHeaders },
       );
     }
 
@@ -49,13 +70,13 @@ serve(async (req) => {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   } catch (err) {
     console.error("[wiz-swap] Unexpected error", err);
     return new Response(
       JSON.stringify({ error: "Unexpected error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
+      { status: 500, headers: corsHeaders },
     );
   }
 });
